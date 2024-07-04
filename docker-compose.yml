@@ -1,10 +1,24 @@
 version: "3.7"
+
 services:
   builder:
     build:
       context: .
       dockerfile: Dockerfile.builder
-      volumes:
+    volumes:
       - ./:/app
     image: builder:latest
     command: bash -c "cd /app && git clone https://github.com/boxfuse/boxfuse-sample-java-war-hello.git && cd boxfuse-sample-java-war-hello && mvn clean package -Dmaven.test.skip=true"
+
+  production:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    image: production:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - builder
+
+volumes:
+  app:
